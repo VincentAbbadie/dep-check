@@ -20,7 +20,7 @@ var (
 	// DebugMode        = false
 	languageFlagList = []string{"go", "js", "java"}
 	// SelectedLanguage string
-	rootCmd = &cobra.Command{
+	RootCmd = &cobra.Command{
 		Use:   "dep-check",
 		Short: "Compute the dependency graph of a monorepo",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
@@ -57,11 +57,7 @@ var (
 )
 
 func init() {
-	rootCmd.PersistentFlags().BoolVar(&config.DebugMode, debugFlag, false, "Add aditional information for debuging purpose")
-	rootCmd.PersistentFlags().StringVarP(&config.SelectedLanguage, languageFlag, "l", "", fmt.Sprintf("Language to parse. Available languages are : %s", strings.Join(languageFlagList, ", ")))
-	rootCmd.MarkPersistentFlagRequired(languageFlag)
-}
-
-func Execute() {
-	rootCmd.Execute()
+	RootCmd.PersistentFlags().BoolVar(&config.DebugMode, debugFlag, false, "Add aditional information for debuging purpose")
+	RootCmd.PersistentFlags().StringVarP(&config.SelectedLanguage, languageFlag, "l", "", fmt.Sprintf("Language to parse. Available languages are : %s", strings.Join(languageFlagList, ", ")))
+	RootCmd.MarkPersistentFlagRequired(languageFlag)
 }

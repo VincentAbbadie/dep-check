@@ -56,7 +56,7 @@ var (
 )
 
 func init() {
-	rootCmd.AddCommand(validateCmd)
+	RootCmd.AddCommand(validateCmd)
 }
 
 // func createOrGetNodeFromGo(pkgPath string) (n *graph.Node) {

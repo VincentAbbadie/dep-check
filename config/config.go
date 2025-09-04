@@ -20,6 +20,7 @@ var (
 	DepCheckConfig   depCheckConfig
 	DebugMode        = false
 	SelectedLanguage string
+	Format           string
 )
 
 func (d *depCheckConfig) IsEmpty() bool {

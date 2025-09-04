@@ -1,4 +1,4 @@
-package cmd
+package detect
 
 // import (
 // 	"fmt"
@@ -33,7 +33,7 @@ package cmd
 // 				services = append(services, pkg.Name())
 // 			}
 // 		}
-	
+
 // 		log.Println("changes detected for services", services)
 // 		fmt.Println(strings.Join(services, " "))
 
