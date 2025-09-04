@@ -1,11 +1,12 @@
 package cmd
 
 import (
-	"github.com/moveaxlab/dep-check/config"
 	"fmt"
 	"log/slog"
 	"slices"
 	"strings"
+
+	"github.com/moveaxlab/dep-check/config"
 
 	"github.com/spf13/cobra"
 )
@@ -35,7 +36,10 @@ var (
 			}
 
 			if !isValid {
-				return fmt.Errorf("langugage %s is not supported", config.SelectedLanguage)
+				if len(config.SelectedLanguage) > 0 {
+					return fmt.Errorf("langugage %s is not supported", config.SelectedLanguage)
+				}
+				return fmt.Errorf("no language selected")
 			}
 
 			return nil

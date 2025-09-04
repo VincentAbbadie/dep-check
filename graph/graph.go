@@ -19,6 +19,10 @@ type Node struct {
 	NodeType   NodeType
 }
 
+func (n *Node) String() string {
+	return fmt.Sprintf("[%s : %s <%s>]", n.Path, n.Name, n.NodeType)
+}
+
 // EDGE definition
 type Edge struct {
 	From, To string
@@ -26,6 +30,22 @@ type Edge struct {
 
 func (e *Edge) String() string {
 	return fmt.Sprintf("%s --> %s", e.From, e.To)
+}
+
+func (e *Edge) IsValid() (bool, string) {
+	retrunMessageTemplate := "%s can not import %s"
+
+	switch Nodes[e.From].NodeType {
+	case Common: // Common can not import Utility
+		if Nodes[e.To].NodeType == Utility {
+			return false, fmt.Sprintf(retrunMessageTemplate, Nodes[e.From], Nodes[e.To])
+		}
+	case Service: // Service cannot import Utility or Service
+		if Nodes[e.To].NodeType == Utility || Nodes[e.To].NodeType == Service {
+			return false, fmt.Sprintf(retrunMessageTemplate, Nodes[e.From], Nodes[e.To])
+		}
+	}
+	return true, ""
 }
 
 // GRAPH definition

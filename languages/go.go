@@ -129,20 +129,20 @@ func (g *GoGraphBuilder) BuildGraph() {
 		pkgNode, newCreation := tryToCreateNode(pkg.PkgPath)
 		if pkgNode != nil {
 			if newCreation {
-				slog.Info(fmt.Sprintf("create node %v", pkgNode))
+				slog.Debug(fmt.Sprintf("create node %v", pkgNode))
 			}
 			for _, imp := range pkg.Imports {
 				impNode, newCreation := tryToCreateNode(imp.PkgPath)
 				if impNode != nil {
 					if newCreation {
-						slog.Info(fmt.Sprintf("create node %v", impNode))
+						slog.Debug(fmt.Sprintf("create node %v", impNode))
 					}
 
 					if pkgNode.Name != impNode.Name {
 						e := &graph.Edge{From: pkgNode.Name, To: impNode.Name}
 						if _, ok := graph.Edges[e.String()]; !ok {
 							graph.Edges[e.String()] = e
-							slog.Info(fmt.Sprintf("create edge %s", e))
+							slog.Debug(fmt.Sprintf("create edge %s", e))
 						}
 					}
 				} else {
@@ -150,7 +150,7 @@ func (g *GoGraphBuilder) BuildGraph() {
 				}
 			}
 		} else {
-			slog.Info(fmt.Sprintf("can not create node with path %s according to %s content", pkg.PkgPath, config.DepCheckFileName))
+			slog.Debug(fmt.Sprintf("can not create node with path %s according to %s content", pkg.PkgPath, config.DepCheckFileName))
 		}
 	}
 
