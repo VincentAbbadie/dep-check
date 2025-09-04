@@ -1,52 +1,63 @@
 package cmd
 
 import (
+	"github.com/moveaxlab/dep-check/config"
 	"fmt"
-	"os"
+	"log/slog"
+	"slices"
+	"strings"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var rootCmd = &cobra.Command{
-	Use:   "dep-check",
-	Short: "project structure and dependencies",
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		log.SetOutput(os.Stderr)
-		value, err := cmd.Flags().GetBool("debug")
-		if err != nil {
-			return fmt.Errorf("failed to check flags: %w", err)
-		}
-		if value {
-			log.SetLevel(log.DebugLevel)
-		}
-		return nil
-	},
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return cmd.Usage()
-	},
-}
+const (
+	debugFlag    = "debug"
+	languageFlag = "language"
+)
+
+var (
+	// DebugMode        = false
+	languageFlagList = []string{"go", "js", "java"}
+	// SelectedLanguage string
+	rootCmd = &cobra.Command{
+		Use:   "dep-check",
+		Short: "Compute the dependency graph of a monorepo",
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if config.DebugMode {
+				slog.SetLogLoggerLevel(slog.LevelDebug)
+				slog.Debug("Debug mode activated")
+			}
+
+			isValid := false
+			if slices.Contains(languageFlagList, config.SelectedLanguage) {
+				isValid = true
+				slog.Info(fmt.Sprintf("Language selected : %s", config.SelectedLanguage))
+			}
+
+			if !isValid {
+				return fmt.Errorf("langugage %s is not supported", config.SelectedLanguage)
+			}
+
+			return nil
+		},
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if config.DepCheckConfig.IsEmpty() {
+				return fmt.Errorf("%s is empty", config.DepCheckFileName)
+			}
+			return nil
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			cmd.Usage()
+		},
+	}
+)
 
 func init() {
-	viper.SetConfigName("dep-check")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")
-	err := viper.ReadInConfig()
-	if err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			viper.WriteConfig()
-		} else {
-			panic(err)
-		}
-	}
-	rootCmd.PersistentFlags().Bool("debug", false, "print debug messages")
+	rootCmd.PersistentFlags().BoolVar(&config.DebugMode, debugFlag, false, "Add aditional information for debuging purpose")
+	rootCmd.PersistentFlags().StringVarP(&config.SelectedLanguage, languageFlag, "l", "", fmt.Sprintf("Language to parse. Available languages are : %s", strings.Join(languageFlagList, ", ")))
+	rootCmd.MarkPersistentFlagRequired(languageFlag)
 }
 
 func Execute() {
-	err := rootCmd.Execute()
-	if err != nil {
-		log.Error(err)
-		os.Exit(1)
-	}
+	rootCmd.Execute()
 }

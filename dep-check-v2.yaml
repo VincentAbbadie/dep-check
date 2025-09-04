@@ -1,0 +1,11 @@
+external:
+  - external
+utility:
+  - common/cmd
+  - common/scripts/*
+  - toolbox
+common:
+  - common/src/*
+  - models/*
+service:
+  - '*'
